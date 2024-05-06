@@ -1,0 +1,25 @@
+*, *:after, *:before {
+  font-size: calc(6px + 4 * (100vw / 1920));
+  font-family: "Press Start 2P", system-ui;
+  font-weight: 400;
+  font-style: normal;
+  box-sizing: border-box;
+}
+body {
+  width: 100%;
+  overflow: auto;
+  height: 100vh;
+  background-color:  var(--backrgound);;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+
+:root {
+  --backrgound: #171818;
+  --mainGreen: #6fa371;
+  --mainYellow: #f0dc4e;
+  --darkBack: #272a29;
+}
