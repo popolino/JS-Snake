@@ -18,8 +18,20 @@
 .container{
   background: var(--darkBack);
   border: 1rem solid var(--mainGreen);
-  width: 50rem;
-  height: 60rem;
+  width: 52.5rem;
+}
+.field{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+
+}
+.square{
+  min-width: 2.52rem;
+  min-height: 2.52rem;
+  background: transparent;
+  border: 1px solid var(--backrgound);
 }
 
 .header{
@@ -31,4 +43,13 @@
   border-bottom: 1rem solid var(--mainGreen);
   font-size: 1.5rem;
   color: var(--mainYellow);
+}
+.head{
+  background-color: var(--mainGreen);
+}
+.body{
+  background-color: #3f5c40;
+}
+.apple{
+  background-color: #e15331;
 }
