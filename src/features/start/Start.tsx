@@ -12,9 +12,6 @@ const Arrow = () => {
 };
 const Start: React.FC = () => {
   const navigate = useNavigate();
-  const onCLick = (event: any) => {
-    navigate("/game");
-  };
   return (
     <div className={classes.container}>
       <div className={classes.header}>
@@ -23,7 +20,7 @@ const Start: React.FC = () => {
       </div>
       <div className={classes.button}>
         <Arrow />
-        <button onClick={onCLick}>START</button>
+        <button onClick={() => navigate("/game")}>START</button>
         <Arrow />
       </div>
     </div>

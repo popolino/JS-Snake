@@ -8,9 +8,12 @@ interface SnakeSegment {
   x: number;
   y: number;
 }
+
 const Game: React.FC = () => {
   const [direction, setDirection] = useState<string>("RIGHT");
   const directionRef = useRef(direction);
+  const nextDirectionRef = useRef(direction);
+  const [count, setCount] = useState<number>(-1);
   const [open, setOpen] = useState<boolean>(false);
   const fieldSize = 20;
   const [square, setSquare] = useState(createInitialField(fieldSize));
@@ -20,6 +23,7 @@ const Game: React.FC = () => {
     { x: 0, y: 0 },
     { x: -1, y: 0 },
   ]);
+
   function getRandomPosition(
     max: number,
     snake: SnakeSegment[]
@@ -37,6 +41,7 @@ const Game: React.FC = () => {
     }
     return { x, y };
   }
+
   function createInitialField(size: number): number[][] {
     const initialSquare: number[][] = [];
     for (let i = 0; i < size; i++) {
@@ -47,32 +52,34 @@ const Game: React.FC = () => {
     }
     return initialSquare;
   }
+
   function moveSnake() {
     let newSnake = [...snake];
     let head = { ...newSnake[0] };
-    switch (direction) {
+
+    switch (directionRef.current) {
       case "UP":
         head.y -= 1;
         if (head.y < 0) {
-          head.y = fieldSize - 1; // Змейка появится с другой стороны по вертикали
+          head.y = fieldSize - 1;
         }
         break;
       case "DOWN":
         head.y += 1;
         if (head.y >= fieldSize) {
-          head.y = 0; // Змейка появится с другой стороны по вертикали
+          head.y = 0;
         }
         break;
       case "LEFT":
         head.x -= 1;
         if (head.x < 0) {
-          head.x = fieldSize - 1; // Змейка появится с другой стороны по горизонтали
+          head.x = fieldSize - 1;
         }
         break;
       case "RIGHT":
         head.x += 1;
         if (head.x >= fieldSize) {
-          head.x = 0; // Змейка появится с другой стороны по горизонтали
+          head.x = 0;
         }
         break;
       default:
@@ -80,9 +87,23 @@ const Game: React.FC = () => {
     }
     newSnake.unshift(head);
     newSnake.pop();
+    directionRef.current = nextDirectionRef.current;
     setSnake(newSnake);
+    pushSnake(newSnake);
     updateSquare(newSnake);
   }
+
+  const pushSnake = (newSnake: SnakeSegment[]) => {
+    let newPart = { x: -1, y: -1 };
+    if (apple && apple.y === newSnake[0].y && apple.x === newSnake[0].x) {
+      newPart = newSnake[newSnake.length - 1];
+      newSnake.push(newPart);
+      setSnake(newSnake);
+      const temp = getRandomPosition(20, newSnake);
+      setApple(temp);
+    }
+  };
+
   function updateSquare(newSnake: SnakeSegment[]) {
     const newSquare = createInitialField(fieldSize);
     newSnake.forEach((segment) => {
@@ -101,33 +122,55 @@ const Game: React.FC = () => {
     }
     setSquare(newSquare);
   }
+  const restartGame = () => {
+    setDirection("RIGHT");
+    directionRef.current = "RIGHT";
+    nextDirectionRef.current = "RIGHT";
+    setSnake([
+      { x: 1, y: 0 },
+      { x: 0, y: 0 },
+      { x: -1, y: 0 },
+    ]);
+    setApple(getRandomPosition(20, snake));
+    setSquare(createInitialField(fieldSize));
+    setCount(-1);
+    setOpen(false);
+  };
+
   useEffect(() => {
-    directionRef.current = direction;
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "ArrowUp" && directionRef.current !== "DOWN") {
-        setDirection("UP");
-      } else if (event.key === "ArrowDown" && directionRef.current !== "UP") {
-        setDirection("DOWN");
-      } else if (
-        event.key === "ArrowRight" &&
-        directionRef.current !== "LEFT"
-      ) {
-        setDirection("RIGHT");
-      } else if (
-        event.key === "ArrowLeft" &&
-        directionRef.current !== "RIGHT"
-      ) {
-        setDirection("LEFT");
+      switch (event.key) {
+        case "ArrowUp":
+          if (directionRef.current !== "DOWN") nextDirectionRef.current = "UP";
+          break;
+        case "ArrowDown":
+          if (directionRef.current !== "UP") nextDirectionRef.current = "DOWN";
+          break;
+        case "ArrowRight":
+          if (directionRef.current !== "LEFT")
+            nextDirectionRef.current = "RIGHT";
+          break;
+        case "ArrowLeft":
+          if (directionRef.current !== "RIGHT")
+            nextDirectionRef.current = "LEFT";
+          break;
+        default:
+          break;
       }
     };
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [direction]); // Обновляем useEffect при изменении direction
+  }, []);
 
   useEffect(() => {
-    const handle = setInterval(moveSnake, 500);
-    return () => clearInterval(handle); // Очистка интервала
-  }, [snake, direction]);
+    const snakeBody = [...snake];
+    snakeBody.shift();
+
+    const snakePositions = new Set(snakeBody.map((seg) => `${seg.x},${seg.y}`));
+    if (snakePositions.has(`${snake[0].x},${snake[0].y}`)) {
+      setOpen(true);
+    }
+  }, [snake]);
 
   useEffect(() => {
     if (!apple) {
@@ -135,11 +178,27 @@ const Game: React.FC = () => {
       setApple({ x: temp.x, y: temp.y });
     }
   }, []);
+
   useEffect(() => {
     if (apple) {
       updateSquare(snake);
     }
+    if (apple && apple.y === snake[0].y && apple.x === snake[0].x) {
+      const temp = getRandomPosition(20, snake);
+      setApple(temp);
+    }
   }, [apple, snake]);
+
+  useEffect(() => {
+    apple && setCount(count + 1);
+  }, [apple]);
+
+  useEffect(() => {
+    if (!open) {
+      const handle = setInterval(moveSnake, 130);
+      return () => clearInterval(handle);
+    }
+  }, [snake, direction]);
   return (
     <>
       <div className={classes.title}>
@@ -147,7 +206,7 @@ const Game: React.FC = () => {
         <img src={Snake} alt="" />
       </div>
       <div className={classes.container}>
-        <div className={classes.header}>SCORE:12</div>
+        <div className={classes.header}>SCORE:{count}</div>
         {square.map((row, rowIndex) => (
           <div key={rowIndex} className={classes.field}>
             {row.map((column, columnIndex) => (
@@ -165,7 +224,11 @@ const Game: React.FC = () => {
         ))}
         <div></div>
       </div>
-      {open && <GameOver open={open} setOpen={setOpen} />}
+      <GameOver
+        setOpen={setOpen}
+        onRestart={restartGame}
+        className={open ? "open" : "close"}
+      />
     </>
   );
 };

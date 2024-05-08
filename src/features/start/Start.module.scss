@@ -1,42 +1,42 @@
 .container {
   width: 100%;
-  height: 100vh;
+  height: 100svh;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  gap: 50px;
+  gap: 5rem;
 }
 
 .header {
-  padding-right: 30px;
+  padding-right: 3rem;
   display: flex;
   align-items: center;
-  gap: 25px;
-  border: 10px solid var(--mainYellow);
+  gap: 2.5rem;
+  border: 1rem solid var(--mainYellow);
   background: var(--backrgound);
   position: relative;
   & > p {
-    font-size: 50px;
+    font-size: 5rem;
     color: var(--mainGreen);
-    transform: translateY(10px);
+    transform: translateY(1rem);
   }
   & > img {
-    width: 150px;
-    padding: 10px;
+    width: 15rem;
+    padding: 1rem;
   }
 }
 .button {
   display: flex;
   width: 100%;
   justify-content: center;
-  gap: 30px;
+  gap: 3rem;
   & > button{
     background-color: var(--mainYellow);
-    width: 200px;
-    font-size: 30px;
+    width: 20rem;
+    font-size: 3rem;
     color: var(--backrgound);
-    padding: 25px 20px 20px 24px;
+    padding: 2.7rem 2.3rem 2.5rem 2.5rem;
     transition: 0.3s ease-in-out;
   }
   & > button:hover{
@@ -45,7 +45,7 @@
   }
 
   & > svg{
-    width: 30px;
+    width: 3rem;
     fill: white;
   }
   & > svg:first-child{
@@ -59,7 +59,7 @@
 }
 @keyframes left-move {
   0%, 100% {
-    transform: translateX(5px);
+    transform: translateX(0.5rem);
   }
   50% {
     transform: translateX(0);
@@ -67,7 +67,7 @@
 }
 @keyframes right-move {
   0%, 100% {
-    transform: translateX(-5px) scaleX(-1);
+    transform: translateX(-0.5rem) scaleX(-1);
   }
   50% {
     transform: translateX(0)  scaleX(-1);
